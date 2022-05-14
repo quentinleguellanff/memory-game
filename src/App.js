@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import './App.css';
 import Card from './components/Card';
+import Particles from "react-tsparticles"
+
 
 function App() {
   
@@ -8,6 +10,8 @@ function App() {
   const [choiceOne,setChoiceOne] = useState(null)
   const [choiceTwo,setChoiceTwo] = useState(null)
   const [nbTurns,setNbTurns] = useState(0)
+  const [time,setTime] = useState(0)
+  const [timeFormatted,setTimeFormatted] = useState('00:00')
 
 
   const cardImages = [
@@ -30,6 +34,20 @@ function App() {
     setChoiceOne(null)
     setChoiceTwo(null)
     setNbTurns(0)
+    setTimeFormatted('00:00')
+    setTime(0)
+  }
+
+  function getTimeElapsedFormatted(timeElapsed){
+    let min = Math.floor(timeElapsed%3600/60)
+    let sec = timeElapsed%3600%60
+    if(min < 10){
+      min = '0'+min
+    }
+    if(sec < 10){
+      sec = '0'+sec
+    }
+    setTimeFormatted(min+':'+sec)
   }
 
   useEffect(() => {
@@ -64,6 +82,14 @@ function App() {
     }
   }
 
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setTime(time+1)
+      getTimeElapsedFormatted(time)
+    }, 1000);
+    return () => clearTimeout(timer);
+},[time]);
+
   const resetTurn = () => {
     setChoiceOne(null)
     setChoiceTwo(null)
@@ -79,6 +105,7 @@ function App() {
         <h1>ROMEM</h1>
         <button onClick={() => shuffleCards()}>New game</button>
       </div>
+      <Particles />
       <div className='board'>
         <div className='cards'>
           {cards.map(card => (
@@ -92,6 +119,7 @@ function App() {
         </div>
       </div>
       <p>Turns:{nbTurns}</p>
+      <p>{timeFormatted}</p>
     </div>
   );
 }
